@@ -9,18 +9,18 @@ import matplotlib.pyplot as plt
 
 # --- 1. إعداد المجلدات والقوائم ---
 lbl = []
-dataset = []  # ميزات الصور الأصلية
-dataset_enhanced = []  # ميزات الصور المحسنة
+dataset = []  #  الصور الأصلية
+dataset_enhanced = []  #  الصور المحسنة
 
 classes = os.listdir("train")
 
-# فلتر الحدة (Sharpening Kernel)
+# (Sharpening Kernel)
 sharpen_kernel = np.array([[-1, -1, -1],
                            [-1, 9, -1],
                            [-1, -1, -1]])
 
 
-# دالة استخراج الميزات (Histogram Extraction)
+# (Histogram Extraction)
 def get_histogram(img):
     h, w = img.shape
     hist = np.zeros(256)
