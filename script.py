@@ -46,7 +46,7 @@ for i in classes:
             continue
         # التحويل لرمادي وتغيير الحجم
         img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        img_gray = cv2.resize(img_gray, (100, 100))
+        img_gray = cv2.resize(img_gray, (256, 256))
 
         # استخراج ميزات الصورة الأصلية
         hist_original = get_histogram(img_gray)
@@ -55,7 +55,7 @@ for i in classes:
         # تطبيق التحسينات
         enhanced_img = cv2.convertScaleAbs(img_gray, beta=10)  # Brightness
         enhanced_img = cv2.GaussianBlur(enhanced_img, (3, 3), 0)  # Blur
-        enhanced_img = cv2.filter2D(img_gray, -1, sharpen_kernel)  # Sharpening
+        enhanced_img = cv2.filter2D(enhanced_img, -1, sharpen_kernel)  # Sharpening
 
         # استخراج ميزات الصورة المحسنة
         hist_enhanced = get_histogram(enhanced_img)
