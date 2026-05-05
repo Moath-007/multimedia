@@ -90,15 +90,15 @@ for cls in classes:
         # توحيد مقاس كل الصور عشان نقدر نقارن بينهم
         img = cv2.resize(img, (224, 224))
         imgGray = manual_grayscale(img)
+
+        # 1. الداتا العادية: بنحول الصورة لفيكتور من البكسلات (بدون أي تعديل إضافي)
+        datasetNormal.append(imgGray.flatten())
+
+        # 2. الداتا المحسنة: بنمرر الصورة بسلسلة فلاتر (تفتيح، تنعيم، حدة) بعدين بناخد "الهيستوجرام" تبعها كميزة
         imgBright = manual_brightness(imgGray, 5)
         imgBlur = manual_blur(imgBright)
         imgSharp = manual_sharpen(imgBlur)
-
-        # 1. الداتا العادية: بنحول الصورة لفيكتور من البكسلات (بدون أي تعديل إضافي)
-        datasetNormal.append(imgSharp.flatten())
-
-        # 2. الداتا المحسنة: بنمرر الصورة بسلسلة فلاتر (تفتيح، تنعيم، حدة) بعدين بناخد "الهيستوجرام" تبعها كميزة
-        histogram = get_hist_features(imgGray)
+        histogram = get_hist_features(imgSharp)
         datasetEnhanced.append(histogram)
 
         lbl.append(cls)
