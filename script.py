@@ -7,7 +7,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-
+from sklearn.svm import SVC
 
 # --- ميثودات المعالجة اليدوية ---
 
@@ -90,15 +90,15 @@ for cls in classes:
         # توحيد مقاس كل الصور عشان نقدر نقارن بينهم
         img = cv2.resize(img, (224, 224))
         imgGray = manual_grayscale(img)
-
-        # 1. الداتا العادية: بنحول الصورة لفيكتور من البكسلات (بدون أي تعديل إضافي)
-        datasetNormal.append(imgGray.flatten())
-
-        # 2. الداتا المحسنة: بنمرر الصورة بسلسلة فلاتر (تفتيح، تنعيم، حدة) بعدين بناخد "الهيستوجرام" تبعها كميزة
         imgBright = manual_brightness(imgGray, 5)
         imgBlur = manual_blur(imgBright)
         imgSharp = manual_sharpen(imgBlur)
-        histogram = get_hist_features(imgSharp)
+
+        # 1. الداتا العادية: بنحول الصورة لفيكتور من البكسلات (بدون أي تعديل إضافي)
+        datasetNormal.append(imgSharp.flatten())
+
+        # 2. الداتا المحسنة: بنمرر الصورة بسلسلة فلاتر (تفتيح، تنعيم، حدة) بعدين بناخد "الهيستوجرام" تبعها كميزة
+        histogram = get_hist_features(imgGray)
         datasetEnhanced.append(histogram)
 
         lbl.append(cls)
@@ -171,7 +171,24 @@ print(classification_report(y_test, y_pred_dt_h))
 print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_dt_h))
 
 
-# --- عرض النتائج بصرياً ---
+# 4. تدريب SVM (Support Vector Machine)
+svm_n = SVC(kernel='rbf', random_state=42).fit(x_train_n, y_train)
+svm_h = SVC(kernel='rbf', random_state=42).fit(x_train_h, y_train)
+
+# فحص الدقة للـ SVM
+y_pred_svm_n = svm_n.predict(x_test_n)
+print("\n=============== SVM: Normal Pixels ===============")
+print(f"Accuracy: {accuracy_score(y_test, y_pred_svm_n):.2f}")
+print(classification_report(y_test, y_pred_svm_n))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_svm_n))
+
+y_pred_svm_h = svm_h.predict(x_test_h)
+print("\n=============== SVM: Enhanced Hist ===============")
+print(f"Accuracy: {accuracy_score(y_test, y_pred_svm_h):.2f}")
+print(classification_report(y_test, y_pred_svm_h))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_svm_h))
+
+# --- عرض النتائج ---
 # في النهاية بنعرض الصورة الأصلية، وشكلها بعد ما نفذنا عليها فلاتر، والهيستوجرام اللي الموديل اتعلم منه
 plt.figure(figsize=(12, 4))
 plt.subplot(1, 3, 1)
